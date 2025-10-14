@@ -162,7 +162,7 @@ class Dropsample(nn.Module):
             return x
 
         keep_mask = torch.FloatTensor((x.shape[0], 1, 1, 1), device = device).uniform_() > self.prob
-        return x * keep_mask / (1 - self.prob)   #丢弃部分样本
+        return x * keep_mask / (1 - self.prob)  
 
 class CSA_Residual(nn.Module):
     def __init__(self, fn, dropout = 0.):
@@ -202,7 +202,7 @@ def CSA(
     )
 
     if dim_in == dim_out and not downsample:
-        net =  CSA_Residual(net, dropout = dropout) #已经建立在net上面的样本丢弃
+        net =  CSA_Residual(net, dropout = dropout) 
 
     return net
 
@@ -252,37 +252,34 @@ class LightMSA(nn.Module):
             self.norm = nn.LayerNorm(dim) 
         # relative positional bias
 
-        self.rel_pos_bias = nn.Embedding((2 * window_size - 1) ** 2, self.heads)#创建空字典
-        #         # 定义嵌入层
+        self.rel_pos_bias = nn.Embedding((2 * window_size - 1) ** 2, self.heads)
         # embedding_layer = nn.Embedding(num_embeddings=10000, embedding_dim=50)
 
-        # # 输入索引序列 (假设批量大小为2，序列长度为3)
+  
         # input_indices = torch.tensor([[1, 2, 3], [4, 5, 6]])
 
-        # # 获取嵌入向量
+
         # embedded_vectors = embedding_layer(input_indices)
 
-        # print(embedded_vectors.shape)  # 输出: torch.Size([2, 3, 50])
-
+        # print(embedded_vectors.shape)
         pos = torch.arange(window_size)
         grid = torch.stack(torch.meshgrid(pos, pos, indexing = 'ij'))
         # print(grid)
         grid = rearrange(grid, 'c i j -> (i j) c')
         # print(grid)
-        rel_pos = rearrange(grid, 'i ... -> i 1 ...') - rearrange(grid, 'j ... -> 1 j ...')#增加一维
-        # print(rel_pos)# 计算每对位置之间的相对位置差
+        rel_pos = rearrange(grid, 'i ... -> i 1 ...') - rearrange(grid, 'j ... -> 1 j ...')
+        # print(rel_pos)
         rel_pos += window_size - 1     
-        # print(rel_pos)#将相对位置差调整到正值范围 [0, 2*window_size-2]，即 [0, 12]
+        # print(rel_pos)
         rel_pos_indices = (rel_pos * torch.tensor([2 * window_size - 1, 1])).sum(dim=-1)
         # print(rel_pos_indices1)
         if sr_ratio > 1:
-             rel_pos_indices = rel_pos_indices[:,24:]  #24 = 49-25,需要一个49*25的相对位置
+             rel_pos_indices = rel_pos_indices[:,24:] 
         # print(rel_pos_indices)
         self.register_buffer('rel_pos_indices', rel_pos_indices, persistent = False)
 
     def forward(self, x):
-        batch, height, width, window_height, window_width, _, device,h = *x.shape, x.device, self.heads#这是一个大等式
-        x = self.norm(x)
+        batch, height, width, window_height, window_width, _, device,h = *x.shape, x.device, self.heads
 
         # flatten
 
@@ -296,13 +293,13 @@ class LightMSA(nn.Module):
         if self.sr_ratio > 1:
             x = rearrange(x, 'b (w1 w2) d -> b d w1 w2',w1 =window_height)
             x_reduce_resolution = self.sr(x)
-            x_kv = rearrange(x_reduce_resolution, 'b d H W -> b (H W) d ')#通过stride=k卷积核后，H和W的值分别缩小变为w1和w2的1/k倍
+            x_kv = rearrange(x_reduce_resolution, 'b d H W -> b (H W) d ')
             x_kv = self.norm(x_kv)
         else:
             x = rearrange(x, 'b (w1 w2) d -> b d w1 w2',w1 =window_height)
             x_kv = rearrange(x, 'b d H W -> b (H W) d ')
         
-        kv_emb = rearrange(self.to_kv(x_kv), 'b N (dim h l ) -> l b h N dim', h=h, l=2)         # 2 B H N DIM
+        kv_emb = rearrange(self.to_kv(x_kv), 'b N (dim h l ) -> l b h N dim', h=h, l=2)      
         k, v = kv_emb[0], kv_emb[1]   #2, B,H,N,DIM -> B,H,N,DIM
         
         # k, v = self.to_kv(x).chunk(3, dim = -1)
@@ -315,11 +312,11 @@ class LightMSA(nn.Module):
 
         # sim
 
-        sim = einsum('b h i d, b h j d -> b h i j', q, k)#q与k的点积
+        sim = einsum('b h i d, b h j d -> b h i j', q, k)
 
         # add positional bias
 
-        bias = self.rel_pos_bias(self.rel_pos_indices) #这里加的位置偏置，bias是一个固定不变的数字
+        bias = self.rel_pos_bias(self.rel_pos_indices) 
    
         sim = sim + rearrange(bias, 'i j h -> h i j')
 
@@ -329,7 +326,7 @@ class LightMSA(nn.Module):
 
         # aggregate
 
-        out = einsum('b h i j, b h j d -> b h i d', attn, v)  #张量操作的简明方法，可以进行各种矩阵乘法、点积、外积、转置、求和等操作。
+        out = einsum('b h i j, b h j d -> b h i d', attn, v) 
 
         # merge heads
 
@@ -392,18 +389,17 @@ class ILViT(nn.Module):
         self,
         *,
         num_classes,
-        dim,#每层得第一个维度，后面翻倍
+        dim,
         depth,
-        # dim_head = 32,#注意力机制得维度
-        dim_head = 16,
-        dim_conv_stem = None,#卷积模块尺寸维度，默认为第一层卷积S0的输出维度
+        # dim_head = 32,
+        dim_conv_stem = None,
         window_size = 7,
         mbconv_expansion_rate = 4,
         mbconv_shrinkage_rate = 0.25,
         dropout = 0.1,
-        stride = 1,#如果是224就是1，如果是448*448输入，就是2
+        stride = 1,
         channels = 3,
-        sr_ratio = 3  #K V中的卷积核大小以及卷积跨步
+        sr_ratio = 3  
     ):
         super().__init__()
         assert isinstance(depth, tuple), 'depth needs to be tuple if integers indicating number of transformer blocks at that stage'
@@ -412,13 +408,7 @@ class ILViT(nn.Module):
         self.conv_stem = Stem_conv(
             in_features=3, mid_features=64,out_features=64, M=3, G=32, r=16, L=32,stride =stride)
 
-        # variables
-        
-        
-        # 假如有如下参数：num_stages = 3
-        # dim = 64
-        # dim_conv_stem = 32
-        
+
         num_stages = len(depth)
 
         dims = tuple(map(lambda i: (2 ** i) * dim, range(num_stages)))
@@ -426,10 +416,7 @@ class ILViT(nn.Module):
         dims = (dim_conv_stem, *dims)
         # print(dims)  # 输出: (32, 64, 128, 256)
         dim_pairs = tuple(zip(dims[:-1], dims[1:]))
-        # dims[:-1] 将是 (32, 64, 128),dims[1:] 将是 (64, 128, 256),zip(dims[:-1], dims[1:]):
-        # zip 函数将这两个元组“压缩”在一起，生成一对对的元素。
-        #  具体来说，它将第一个元组的第 i 个元素和第二个元组的第 i 个元素配对。
-        # print(dim_pairs)  # 输出: ((32, 64), (64, 128), (128, 256))
+
         self.layers1 = nn.ModuleList([])
         self.layers2 = nn.ModuleList([])
 
@@ -443,13 +430,13 @@ class ILViT(nn.Module):
         for ind, ((layer_dim_in, layer_dim), layer_depth) in enumerate(zip(dim_pairs, depth)):
             for stage_ind in range(layer_depth):
                 is_first = stage_ind == 0
-                #这段代码的意思是检查当前的 stage_ind 是否等于 0，并将结果（布尔值 True 或 False）赋值给变量 is_first
+
                 stage_dim_in = layer_dim_in if is_first else layer_dim
 
                 block1 = nn.Sequential(
                     CSA(
-                        dim_in = stage_dim_in//2,#输入的维度
-                        dim_out = layer_dim//2,#输出的维度
+                        dim_in = stage_dim_in//2,
+                        dim_out = layer_dim//2,
                         downsample = is_first,
                         expansion_rate = mbconv_expansion_rate,
                         shrinkage_rate = mbconv_shrinkage_rate,
@@ -482,8 +469,8 @@ class ILViT(nn.Module):
                 )
                 grid1 = nn.Sequential(
                     CSA(
-                         dim_in = stage_dim_in//2,#输入的维度
-                        dim_out = layer_dim//2,#输出的维度
+                         dim_in = stage_dim_in//2,
+                        dim_out = layer_dim//2,
                         downsample = is_first,
                         expansion_rate = mbconv_expansion_rate,
                         shrinkage_rate = mbconv_shrinkage_rate,
@@ -499,8 +486,8 @@ class ILViT(nn.Module):
                 )
                 grid2 = nn.Sequential(
                     CSA(
-                         dim_in = stage_dim_in//2,#输入的维度
-                        dim_out = layer_dim//2,#输出的维度
+                         dim_in = stage_dim_in//2,
+                        dim_out = layer_dim//2,
                         downsample = is_first,
                         expansion_rate = mbconv_expansion_rate,
                         shrinkage_rate = mbconv_shrinkage_rate,
@@ -519,7 +506,7 @@ class ILViT(nn.Module):
                 self.layers2.append(nn.ModuleList([block2,grid2]))
 
         # mlp head out
-       #独立分支1的输出
+
         self.mlp_head1 = nn.Sequential(
                 Reduce('b d h w -> b d', 'mean'),
                 nn.LayerNorm(dims[-1]),
@@ -527,7 +514,7 @@ class ILViT(nn.Module):
                 nn.Dropout(dropout),
                 nn.Linear(32, num_classes)
             )
-        #独立分支2的输出
+
         self.mlp_head2 = nn.Sequential(
                 Reduce('b d h w -> b d', 'mean'),
                 nn.LayerNorm(dims[-1]),
@@ -535,7 +522,7 @@ class ILViT(nn.Module):
                 nn.Dropout(dropout),
                 nn.Linear(32, num_classes)
             )
-        #合计输出
+
         self.mlp_head = nn.Sequential(
                 Reduce('b d h w -> b d', 'mean'),
                 nn.LayerNorm(dims[-1]*2),
@@ -552,13 +539,13 @@ class ILViT(nn.Module):
                 x1a, x1b = x1[:, :c//2, :, :], x1[:, c//2:, :, :]
                 x1a = block1(x1a)
                 x1b = grid1(x1b)
-                x1 = torch.cat([x1b, x1a], dim=1)#交换顺序 
+                x1 = torch.cat([x1b, x1a], dim=1)#
         for block2, grid2 in self.layers2:
                 b, c, h, w = x2.shape
                 x2a, x2b = x2[:, :c//2, :, :], x2[:, c//2:, :, :]
                 x2a = block2(x2a)
                 x2b = grid2(x2b)
-                x2 = torch.cat([x2b, x2a], dim=1)#交换顺序 
+                x2 = torch.cat([x2b, x2a], dim=1)#
 
 
         y1 = self.mlp_head1(x1)
@@ -578,25 +565,11 @@ V1 = ILViT(
         window_size = 7,                  # window size for block and grids
         mbconv_expansion_rate = 4,        # expansion rate of MBConv
         mbconv_shrinkage_rate = 0.25, 
-        stride =1  ,# 如果是448*448的输入，那么就是2
+        stride =1  ,
         dropout = 0.1   ,                  # dropout
-        sr_ratio = 1   #注意力机制中没有avgpool
+        sr_ratio = 1  
     )
 
-
-# from torch.utils.tensorboard import SummaryWriter
-# # 创建 SummaryWriter
-# writer = SummaryWriter('runs/my_model_double_Ilvit')
-
-# # 创建两个虚拟输入张量
-# input1 = torch.randn(1, 3, 224, 224)
-# input2 = torch.randn(1, 3, 224, 224)
-
-# # 使用 add_graph 方法记录模型的计算图
-# writer.add_graph(V1, (input1, input2))
-
-# # 关闭 SummaryWriter
-# writer.close()
 
 
 
