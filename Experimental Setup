@@ -1,9 +1,7 @@
-🧠 Experimental Setup
+All experiments were implemented using the PyTorch deep learning framework on a workstation equipped with an NVIDIA RTX 3090 Ti GPU (24 GB memory).
+The system was configured with GPU driver version 535.183.01 and CUDA 12.2, ensuring stable and efficient computation for both training and inference.
 
-All experiments were conducted using the PyTorch deep learning framework on a workstation equipped with an NVIDIA RTX 3090 Ti GPU (24 GB memory).
-The GPU driver version was 535.183.01, and the CUDA version was 12.2, ensuring stable and efficient computation during both training and inference.
-
-Training Configuration
+⚙️ Training Configuration
 
 Optimizer: Stochastic Gradient Descent (SGD)
 
@@ -19,4 +17,6 @@ Weight Decay (L2): 5 × 10⁻⁴
 
 Learning Rate Schedule: decayed by a factor of 0.8 every 10 epochs
 
-This setup ensures smooth convergence and prevents overfitting while maintaining efficient training performance.
+Input Scaling: resized to 1000 × 800
+
+This configuration ensures stable convergence, effective generalization, and efficient GPU utilization throughout the training process.
