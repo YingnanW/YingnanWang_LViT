@@ -46,9 +46,9 @@ if __name__ == '__main__':
     pair = args.pair
 
     
-    logging.basicConfig(filename=f"/home/mch/our_model/Gate_LIVIT/1_log/{net}-{DATA}-lr{lr}-gamma{args.gamma}-{pair}-{output}.log", level=logging.INFO)
+    logging.basicConfig(filename=f"/home/our_model/Gate_LIVIT/1_log/{net}-{DATA}-lr{lr}-gamma{args.gamma}-{pair}-{output}.log", level=logging.INFO)
     logger  = logging.getLogger(__name__)
-    writer = SummaryWriter(f"/home/mch/our_model/Gate_LIVIT/3_tensorboard_writer/{net}-{DATA}-lr{lr}-gamma{args.gamma}-{pair}-{output}")
+    writer = SummaryWriter(f"/home/our_model/Gate_LIVIT/3_tensorboard_writer/{net}-{DATA}-lr{lr}-gamma{args.gamma}-{pair}-{output}")
     
 
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             dropout = 0.1   ,                  # dropout
             sr_ratio = 1   #
         )
-        print("模型为：doubule_ILViT_gate_GLU")
+        print("doubule_ILViT_gate_GLU")
         
     elif args.model =='double_ILViT_gate_SGU':
         model_ft = ILViT_Gate_SGU(
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             dropout = 0.1   ,                  # dropout
             sr_ratio = 1  
         )
-        print("模型为：double_ILViT_gate_SGU")
+        print("double_ILViT_gate_SGU")
 
     else:
         model_ft = ILViT(
@@ -96,22 +96,21 @@ if __name__ == '__main__':
             mbconv_shrinkage_rate = 0.25, 
             stride =1  ,
             dropout = 0.1   ,                  # dropout
-            sr_ratio = 1   #注意力机制中没有avgpool
+            sr_ratio = 1  
         )
-        print("模型为：double_ILViT—cat或者add")
+        print("double_ILViT—cat或者add")
     model_ft =  nn.DataParallel(model_ft)
     model_ft = model_ft.to(device)
-    criterion = nn.CrossEntropyLoss()# 定义损失函数
+    criterion = nn.CrossEntropyLoss()
     
     # print(model_ft)
     
     if args.optim == 'sgd':
    
-        optimizer_ft = optim.SGD(model_ft.parameters(), lr=args.lr, momentum=args.momentum,weight_decay=args.weight_decay)# 定义优化器：进行L2正则化
-        exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft,step_size=args.stepsize,gamma=args.gamma)# 学习率每5代衰减
-
+        optimizer_ft = optim.SGD(model_ft.parameters(), lr=args.lr, momentum=args.momentum,weight_decay=args.weight_decay)
+        exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft,step_size=args.stepsize,gamma=args.gamma)#
     
-    model = train_model(model=model_ft,# 开始训练模型
+    model = train_model(model=model_ft,
                         criterion=criterion,
                         optimizer=optimizer_ft,
                         scheduler=exp_lr_scheduler,
