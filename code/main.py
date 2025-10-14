@@ -71,22 +71,6 @@ if __name__ == '__main__':
         )
         print("模型为：doubule_ILViT_gate_GLU")
         
-    elif args.model =='double_ILViT_gate_SGU':
-        model_ft = ILViT_Gate_SGU(
-            num_classes = 2,
-            dim_conv_stem = 64,               # dimension of the convolutional stem, would default to dimension of first layer if not specified
-            dim = 96,                         # dimension of first layer, doubles every layer
-            dim_head = 16,                    # dimension of attention heads, kept at 32 in paper    
-            depth = (1, 2, 3, 1),  # number of MaxViT blocks per stage, which consists of MBConv, block-like attention, grid-like attention
-            window_size = 7,                  # window size for block and grids
-            mbconv_expansion_rate = 4,        # expansion rate of MBConv
-            mbconv_shrinkage_rate = 0.25, 
-            stride =1  ,
-            dropout = 0.1   ,                  # dropout
-            sr_ratio = 1   #注意力机制中没有avgpool
-        )
-        print("模型为：double_ILViT_gate_SGU")
-        
     elif args.model == 'double_ILViT_GFM2':
          model_ft = ILViT_GFM(
             num_classes = 2,
@@ -102,22 +86,6 @@ if __name__ == '__main__':
             sr_ratio = 1   #注意力机制中没有avgpool
         )
          print("模型为：'double_ILViT_GFM2'")
-         
-    elif args.model == 'double_ILViT_SGU_GFM2':
-         model_ft = ILViT_SGU_GFM(
-            num_classes = 2,
-            dim_conv_stem = 64,               # dimension of the convolutional stem, would default to dimension of first layer if not specified
-            dim = 96,                         # dimension of first layer, doubles every layer
-            dim_head = 16,                    # dimension of attention heads, kept at 32 in paper    
-            depth = (1, 2, 3, 1),  # number of MaxViT blocks per stage, which consists of MBConv, block-like attention, grid-like attention
-            window_size = 7,                  # window size for block and grids
-            mbconv_expansion_rate = 4,        # expansion rate of MBConv
-            mbconv_shrinkage_rate = 0.25, 
-            stride =1  ,
-            dropout = 0.1   ,                  # dropout
-            sr_ratio = 1   #注意力机制中没有avgpool
-        )
-         print("模型为：double_ILViT_SGU_GFM2'")
          
 
     else:
@@ -140,13 +108,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()# 定义损失函数
     
     # print(model_ft)
-    
-    if args.optim == 'sgd':
-   
-        optimizer_ft = optim.SGD(model_ft.parameters(), lr=args.lr, momentum=args.momentum,weight_decay=args.weight_decay)# 定义优化器：进行L2正则化
-        exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft,step_size=args.stepsize,gamma=args.gamma)# 学习率每5代衰减
-
-    
+        
     model = train_model(model=model_ft,# 开始训练模型
                         criterion=criterion,
                         optimizer=optimizer_ft,
