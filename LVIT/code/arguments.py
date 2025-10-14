@@ -12,7 +12,7 @@ def args_parser():
     parser.add_argument('--stepsize', type=int, default=10)
     
     parser.add_argument('--b', type=float, default=0.3)  
-    #策略选择
+
     parser.add_argument('--pair', type=str, default='A' ,choices=['A','A+B'])
     parser.add_argument('--output', type=str, default='more' ,choices=['main','more'])
  #   parser.add_argument('--fushion', type=str, default='mix',choices=['mix','finall'])
