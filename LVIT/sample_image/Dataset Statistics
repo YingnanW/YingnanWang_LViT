@@ -1,12 +1,18 @@
-### 📊 Dataset Statistics
+<h3>📊 Dataset Statistics</h3>
 
-| Category     | Antrum | Angle | Cardia | Fundus | Body | **Total** |
-|---------------|:------:|:-----:|:------:|:------:|:----:|:----------:|
-| **WLI-IM**     | 1183 | 600 | 42  | 14  | 599 | 2438 |
-| **WLI-GA**     | 1600 | 569 | 77  | 99  | 1036 | 3381 |
-| **WLI-Normal** | 1095 | 650 | 534 | 1074 | 2501 | 5854 |
-| **LCI-IM**     | 1247 | 602 | 35  | 17  | 648 | 2549 |
-| **LCI-GA**     | 1482 | 524 | 94  | 78  | 1092 | 3270 |
-| **LCI-Normal** | 740  | 448 | 545 | 631 | 1564 | 3928 |
-| **Total**      | **7347** | **3393** | **1327** | **1913** | **7440** | **21420** |
-
+<table>
+  <thead>
+    <tr>
+      <th>Category</th><th>Antrum</th><th>Angle</th><th>Cardia</th><th>Fundus</th><th>Body</th><th><b>Total</b></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><b>WLI-IM</b></td><td>1183</td><td>600</td><td>42</td><td>14</td><td>599</td><td>2438</td></tr>
+    <tr><td><b>WLI-GA</b></td><td>1600</td><td>569</td><td>77</td><td>99</td><td>1036</td><td>3381</td></tr>
+    <tr><td><b>WLI-Normal</b></td><td>1095</td><td>650</td><td>534</td><td>1074</td><td>2501</td><td>5854</td></tr>
+    <tr><td><b>LCI-IM</b></td><td>1247</td><td>602</td><td>35</td><td>17</td><td>648</td><td>2549</td></tr>
+    <tr><td><b>LCI-GA</b></td><td>1482</td><td>524</td><td>94</td><td>78</td><td>1092</td><td>3270</td></tr>
+    <tr><td><b>LCI-Normal</b></td><td>740</td><td>448</td><td>545</td><td>631</td><td>1564</td><td>3928</td></tr>
+    <tr><td><b>Total</b></td><td><b>7347</b></td><td><b>3393</b></td><td><b>1327</b></td><td><b>1913</b></td><td><b>7440</b></td><td><b>21420</b></td></tr>
+  </tbody>
+</table>
