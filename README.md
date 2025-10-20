@@ -1,4 +1,4 @@
-# README
+# Lightweight Vision Learning for Intestinal Metaplasia and Gastritis Atrophy Recognition in Endoscopic Images
 
 ## Data
 There are samples, and more will be uploaded gradually.
