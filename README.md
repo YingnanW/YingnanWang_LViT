@@ -6,7 +6,7 @@ The full dataset can be requested via the contact information in this paper and 
 
 ## Official Implementation
 
-- pytorch/
+- pytorch
 
 ## Citation
 
