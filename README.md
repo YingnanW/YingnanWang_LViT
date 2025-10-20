@@ -13,7 +13,6 @@ If you use LViT for your research, please cite our papers:
 @article{Wang2025LViT,
   title={Lightweight Vision Learning for Intestinal Metaplasia and Gastritis Atrophy Recognition in Endoscopic Images},
   author={Chuanhong Min, Yingnan Wang, Yan Ou, Zhiqian Chen, Juan Liao, Wenjian Sun, Yang Luo, and Chunbo Luo},
-  journal={IEEE Transactions on Medical Imaging},
+  journal={Submitted to IEEE Transactions on Medical Imaging, under review},
   year={2025},
-  publisher={IEEE}
 }
