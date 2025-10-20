@@ -1,5 +1,5 @@
 # Lightweight Vision Learning for Intestinal Metaplasia and Gastritis Atrophy Recognition in Endoscopic Images
-This repository contains Python code that may be used when using datasets
+This repository contains Python code that may be used when using datasets.
 ## Data
 There are samples, and more will be uploaded gradually.
 
