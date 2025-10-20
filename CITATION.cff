@@ -1,12 +1,7 @@
-cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
-authors:
-  - family-names: Druskat
-    given-names: Stephan
-    orcid: https://orcid.org/1234-5678-9101-1121
-title: "My Research Software"
-version: 2.0.4
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.1234
-date-released: 2021-08-11
+@misc{repository_name,
+author = {Wang Yingnan},
+title = {Lightweight Vision Learning for Intestinal Metaplasia and Gastritis Atrophy Recognition in Endoscopic Images},
+year = {2025},
+url = {https://github.com/YingnanW/YingnanWang_LViT},
+note = {2025.10.20}
+}
